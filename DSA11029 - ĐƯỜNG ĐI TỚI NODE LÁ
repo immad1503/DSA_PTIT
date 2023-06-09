@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> adj[1005];
+vector<int> vis (1005);
+int n;
+
+void bfs (int u, int v) {
+    queue<int> q;
+    q.push (u);
+    vis[u] = 1;
+    vector<int> par (n + 1);
+    par[u] = u;
+    while (!q.empty ()) {
+        int node = q.front (); q.pop ();
+        if (node == v) break;
+        for (int adjNode : adj[node]) {
+            if (!vis[adjNode]) {
+                vis[adjNode] = 1;
+                q.push (adjNode);
+                par[adjNode] = node;
+            }
+        }
+    }
+    int dest = v;
+    vector<int> path;
+    while (dest != u) {
+        path.push_back (dest);
+        dest = par[dest];
+    }
+    path.push_back (u);
+    reverse (path.begin (), path.end ());
+    for (int i : path) cout << i << " ";
+    cout << endl;
+}
+
+int main () {
+
+    ios_base::sync_with_stdio (0); cin.tie (0); cout.tie (0);
+
+    int T; cin >> T;
+    while (T--) {
+        cin >> n;
+        for (int i = 1; i <= n; i++) {
+            adj[i].clear ();
+            vis[i] = 0;
+        }
+        for (int i = 1; i < n; i++) {
+            int u, v; cin >> u >> v;
+            adj[u].push_back (v);
+        }
+        vector<int> leaf;
+        for (int i = 2; i <= n; i++) {
+            if (adj[i].size () == 0)  leaf.push_back (i);
+        }
+        for (int v : leaf) {
+            bfs (1, v);
+            for (int i = 1; i <= n; i++) vis[i] = 0;
+        }
+    }
+}
