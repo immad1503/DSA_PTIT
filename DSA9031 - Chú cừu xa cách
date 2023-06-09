@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int dx[] = {-1, 0, 0, 1};
+int dy[] = {0, -1, 1, 0};
+
+class DisjointSet {
+    public:
+        vector<int> parent;
+        vector<int> size;
+        DisjointSet (int n) {
+            parent.resize ((n + 1) * (n + 1));
+            size.resize ((n + 1) * (n + 1));
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    parent[n * i + j] = n * i + j;
+                    size[n * i + j] = 1;
+                }
+            }
+        }
+
+        int findParent (int u) {
+            if (u == parent[u]) return u;
+            return parent[u] = findParent (parent[u]);
+        }
+
+        void UnionBySize (int u, int v) {
+            int up = findParent (u), vp = findParent (v);
+            if (up == vp) return;
+            if (size[up] < size[vp]) {
+                size[vp] += size[up];
+                parent[up] = vp;
+            } else {
+                size[up] += size[vp];
+                parent[vp] = up;
+            }
+        }
+};
+
+int main () {
+
+    ios_base::sync_with_stdio (0); cin.tie (0); cout.tie (0);
+    int n, k, m; cin >> n >> k >> m;
+    map<pair<int, int>, vector<pair<int, int>>> mp;
+    while (m--) {
+        int u, v, x, y; cin >> u >> v >> x >> y;
+        mp[{u, v}].push_back ({x, y});
+        mp[{x, y}].push_back ({u, v});
+    }
+    DisjointSet ds (n);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            for (int k = 0; k < 4; k++) {
+                int ii = i + dx[k];
+                int jj = j + dy[k];
+                if (ii >= 1 && ii <= n && jj >= 1 && jj <= n) {
+                    int ok = 1;
+                    for (pair<int, int> p : mp[{i, j}]) {
+                        if (p.first == ii && p.second == jj) {
+                            ok = 0;
+                            break;
+                        }
+                    }
+                    if (ok == 1) {
+                        ds.UnionBySize (n * i + j, n * ii + jj);
+                    }
+                }
+            }
+        }
+    }
+    vector<pair<int, int>> vec;
+    while (k--) {
+        int u, v; cin >> u >> v;
+        vec.push_back ({u, v});
+    }
+    int res = 0;
+    for (int i = 0; i < vec.size () - 1; i++) {
+        for (int j = i + 1; j < vec.size (); j++) {
+            if (ds.findParent (vec[i].first * n + vec[i].second) != ds.findParent (vec[j].first * n + vec[j].second)) {
+                res++;
+            }
+        }
+    }
+    cout << res << endl;
+}
