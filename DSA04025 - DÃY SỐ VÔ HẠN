@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int mod = 1e9 + 7;
+
+struct Matrix {
+    long long mat[2][2] = {};
+};
+
+Matrix src;
+
+Matrix multiMatrix (Matrix a, Matrix b) {
+    Matrix res;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            for (int k = 0; k < 2; k++) {
+                res.mat[i][j] += (a.mat[i][k] % mod) * (b.mat[k][j] % mod);
+                res.mat[i][j] %= mod;
+            }
+        }
+    }
+    return res;
+}
+
+Matrix matrixPow (Matrix mat, long k) {
+    if (k == 1) return mat;
+    Matrix res = matrixPow (mat, k / 2);
+    res = multiMatrix (res, res);
+    if (k % 2) res = multiMatrix (res, src);
+
+    return res;
+}
+
+int main () {
+
+    src.mat[0][0] = src.mat[0][1] = src.mat[1][0] = 1;
+    src.mat[1][1] = 0;
+
+    int T; cin >> T;
+    while (T--) {
+        long k; cin >> k;
+        Matrix mat;
+        mat.mat[0][0] = mat.mat[0][1] = mat.mat[1][0] = 1;
+        mat.mat[1][1] = 0;
+        mat = matrixPow (mat, k);
+        cout << mat.mat[0][1] << endl;
+    }
+}
