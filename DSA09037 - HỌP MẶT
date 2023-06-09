@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> adj[1005];
+vector<int> vis (1005);
+
+bool bfs (int u, int v) {
+    queue<int> q;
+    q.push (u);
+    vis[u] = 1;
+    while (!q.empty ()) {
+        int node = q.front (); q.pop ();
+        if (node == v) return true;
+        vis[node] = 1;
+        for (int adjNode : adj[node]) {
+            if (!vis[adjNode]) {
+                vis[adjNode] = 1;
+                q.push (adjNode);
+            }
+        }
+    }
+    return false;
+}
+
+int main () {
+
+    int k, n, m; cin >> k >> n >> m;
+    vector<int> people (k);
+    for (int i = 0; i < k; i++) cin >> people [i];
+    while (m--) {
+        int u, v; cin >> u >> v;
+        adj[u].push_back (v);
+    }
+
+    int res = 0;
+    for (int i = 1; i <= n; i++) {
+        int ok = 1;
+        for (int u : people) {
+            if (!bfs (u, i)) {
+                ok = 0;
+            }
+            for (int j = 1; j <= n; j++) vis[j] = 0;
+        }
+        if (ok == 1) res++;
+    }
+    cout << res << endl;
+
+}
