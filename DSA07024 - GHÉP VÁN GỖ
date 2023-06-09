@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+long wood (int n, long a[]) {
+    stack<int> st;
+    long left [n], right [n];
+    for (int i = 0; i < n; i++) {
+        while (!st.empty () && a[i] <= a[st.top ()]) st.pop ();
+        if (st.empty ()) left[i] = 0;
+        else left[i] = st.top () + 1;
+        st.push (i);
+    }
+    while (!st.empty ()) st.pop ();
+    for (int i = n - 1; i >= 0; i--) {
+        while (!st.empty () && a[i] <= a[st.top ()]) st.pop ();
+        if (st.empty ()) right[i] = n - 1;
+        else right[i] = st.top () - 1;
+        st.push (i);
+    }
+     long res = 0;
+    for (int i = 0; i < n; i++) {
+        if (right[i] - left[i] + 1 >= a[i]) {
+            res = max (res, a[i]);
+        }
+    }
+    return res;
+}
+
+int main () {
+    ios_base::sync_with_stdio (0); cin.tie (0); cout.tie (0);
+
+    int T; cin >> T;
+    while (T--) {
+        int n; cin >> n;
+        long a[n];
+        for (int i = 0; i < n; i++) cin >> a[i];
+        cout << wood (n, a) << endl;
+    }
+
+}
