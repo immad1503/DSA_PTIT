@@ -1,0 +1,22 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int mod = 1e9 + 7;
+
+char find (int n, long long k) {
+    long long a = pow (2, n - 1);
+    if (k == a) return 'A' - 1 + n;
+    if (k > a) return find (n - 1, k - a);
+    return find (n - 1, k);
+}
+
+int main () {
+
+    int T; cin >> T;
+    while (T--) {
+        int n; long long k;
+        cin >> n >> k;
+        cout << find (n, k) << endl;
+    }
+}
