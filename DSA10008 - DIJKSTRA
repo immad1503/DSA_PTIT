@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int n, e, u;
+vector<pair<int, int>> adj[1005];
+
+void dijkstra () {
+    vector<int> dist (n + 1, 1e9);
+    dist[u] = 0;
+    priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+    pq.push ({0, u});
+    while (!pq.empty ()) {
+        int dis = pq.top ().first;
+        int node = pq.top ().second;
+        pq.pop ();
+        for (pair<int, int> p : adj[node]) {
+            int wt = p.first;
+            int adjNode = p.second;
+            if (dist[adjNode] > dis + wt) {
+                dist[adjNode] = dis + wt;
+                pq.push ({dis + wt, adjNode});
+            }
+        }
+    }
+    for (int i = 1; i <= n; i++) cout << dist[i] << " ";
+    cout << endl;
+}
+
+int main () {
+
+    int T; cin >> T;
+    while (T--) {
+        cin >> n >> e >> u;
+        for (int i = 1; i <= n; i++) adj[i].clear ();
+        while (e--) {
+            int u, v, wt; cin >> u >> v >> wt;
+            adj[u].push_back ({wt, v});
+            adj[v].push_back ({wt, u});
+        }
+        dijkstra ();
+    }
+}
