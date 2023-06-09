@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int n;
+
+class DisjointSet {
+    public:
+        vector<int> parent, size;
+        DisjointSet (int n) {
+            parent.resize (n + 1);
+            size.resize (n + 1);
+            for (int i = 0; i <= n; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+        }
+
+        int findPar (int u) {
+            if (u == parent[u]) return u;
+            return parent[u] = findPar (parent[u]);
+        }
+
+        void UnionBySize (int u, int v) {
+            int up = findPar (u);
+            int vp = findPar (v);
+            if (up == vp) return;
+            if (size[up] < size[vp]) {
+                size[vp] += size[up];
+                parent[up] = vp;
+            } else {
+                size[up] += size[vp];
+                parent[vp] = up;
+            }
+        }
+};
+
+double minimumDistance (vector<pair<double, double>> points) {
+    double res = 0;
+    vector<pair<double,pair<int, int>>> vec;
+    // int mat[n + 1][n + 1] = {};
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            double dis = sqrt (pow (points[j].first - points[i].first, 2) + pow (points[j].second - points[i].second, 2));
+            vec.push_back ({dis, {i, j}});
+        }
+    }
+    sort (vec.begin (), vec.end ());
+    DisjointSet ds (n);
+    for (int i = 0; i < vec.size (); i++) {
+        int u = vec[i].second.first, v = vec[i].second.second;
+        if (ds.findPar (u) != ds.findPar (v)) {
+            res += vec[i].first;
+            ds.UnionBySize (u, v);
+        }
+    }
+    return res;
+}
+
+int main () {
+
+    ios_base::sync_with_stdio (0); cin.tie (0); cout.tie (0);
+
+    int T; cin >> T;
+    while (T--) {
+        cin >> n;
+        vector<pair<double, double>> points;
+        for (int i = 0; i < n; i++) {
+            double a, b; cin >> a >> b;
+            points.push_back ({a, b});
+        }
+        cout << setprecision (6) << fixed << minimumDistance (points) << endl;
+    }
+}
