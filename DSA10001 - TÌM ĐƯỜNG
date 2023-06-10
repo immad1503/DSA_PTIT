@@ -1,0 +1,73 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int dx[] = {-1, 0, 0, 1};
+int dy[] = {0, -1, 1, 0};
+int n, m;
+
+char way (int row, int col, int nrow, int ncol) {
+    int a = nrow - row;
+    if (a == 1) return 'D';
+    else if (a == -1) return 'U';
+    int b = ncol - col;
+    if (b == 1) return 'R';
+    else return 'L';
+}
+
+pair<int, int> src, dest;
+int vis[505][505] = {};
+bool isPath (vector<vector<char>> mat) {
+    queue<pair<int, pair<char, pair<int, int>>>> q;
+    q.push ({0, {'X', {src.first, src.second}}});
+    vis[src.first][src.second] = 1;
+    while (!q.empty ()) {
+        int time = q.front ().first;
+        char prv = q.front ().second.first;
+        int row = q.front ().second.second.first;
+        int col = q.front ().second.second.second;
+        q.pop ();
+        if (time > 2) continue;
+        if (row == dest.first && col == dest.second) return true;
+        for (int k = 0; k < 4; k++) {
+            int nrow = row + dx[k];
+            int ncol = col + dy[k];
+            if (nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && !vis[nrow][ncol] && mat[nrow][ncol] == '.') {
+                vis[nrow][ncol] = 1;
+                char c = way (row, col, nrow, ncol);
+                if (c == prv || prv == 'X') q.push ({time, {c, {nrow, ncol}}});
+                else q.push ({time + 1, {c, {nrow, ncol}}});
+            }
+        }
+    }
+    return false;
+}
+
+int main () {
+
+    ios_base::sync_with_stdio (0); cin.tie (0); cout.tie (0);
+
+    int T; cin >> T;
+    while (T--) {
+        cin >> n >> m;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) vis[i][j] = 0;
+        }
+        vector<vector<char>> mat (n, vector<char> (m));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                cin >> mat[i][j];
+                if (mat[i][j] == 'S') {
+                    src.first = i; src.second = j;
+                    mat[i][j] = '.';
+                }
+                if (mat[i][j] == 'T') {
+                    dest.first = i; dest.second = j;
+                    mat[i][j] = '.';
+                }
+            }
+        }
+        if (isPath (mat)) cout << "YES\n";
+        else cout << "NO\n";
+    }
+}
